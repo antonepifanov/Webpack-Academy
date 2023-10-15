@@ -16,6 +16,7 @@
       "no-plusplus": 0,
       "no-debugger": 1,
       "no-param-reassign": 0,
-      "no-constant-condition": 0
+      "no-constant-condition": 0,
+      "linebreak-style": 0
     }
 }
