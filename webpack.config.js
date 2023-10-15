@@ -8,9 +8,14 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const stylesHandler = isProduction ? MiniCssExtractPlugin.loader : 'style-loader';
 
+const fileNames = ['index', 'main'];
+
 const config = {
   context: path.join(__dirname, 'src'),
-  entry: './index.js',
+  entry: fileNames.reduce((conf, index) => {
+    conf[index] = `./${index}.js`;
+    return conf;
+  }, {}),
   output: {
     path: path.resolve(__dirname, 'dist'),
   },
@@ -18,14 +23,16 @@ const config = {
     open: true,
     host: 'localhost',
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: 'index.html',
-    }),
-
-    // Add your plugins here
-    // Learn more about plugins from https://webpack.js.org/configuration/plugins/
-  ],
+  plugins: [].concat(
+    fileNames.map(
+      (file) => new HtmlWebpackPlugin({
+        inject: 'head',
+        template: `./${file}.html`,
+        filename: `./${file}.html`,
+        chunks: [file],
+      }),
+    ),
+  ).filter(Boolean),
   module: {
     rules: [
       {
@@ -39,6 +46,10 @@ const config = {
       {
         test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
         type: 'asset',
+      },
+      {
+        test: /\.(html)$/,
+        use: ['html-loader'],
       },
 
       // Add your rules for custom modules here
